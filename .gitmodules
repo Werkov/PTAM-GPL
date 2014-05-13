@@ -1,0 +1,9 @@
+[submodule "ThirdParty/Src/libcvd"]
+	path = ThirdParty/Src/libcvd
+	url = https://github.com/Werkov/libcvd.git
+[submodule "ThirdParty/Src/gvars"]
+	path = ThirdParty/Src/gvars
+	url = https://github.com/Werkov/gvars.git
+[submodule "ThirdParty/Src/TooN"]
+	path = ThirdParty/Src/TooN
+	url = https://github.com/Werkov/TooN.git

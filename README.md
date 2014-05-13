@@ -31,3 +31,25 @@ Bug fixing, new features, and branches
 If you have a version of PTAM with changes that you would like to merge into this master version, please send a pull or patch request.
 
 Requests will be placed in their own branch for review and testing. Therefore, branches may or may not work. Branches will eventually be merged into the master once we have had time to review and test.
+
+Compilation and dependencies with cmake
+---------------------------------------
+
+Dependencies are:
+	- TooN (header only): library for numerical calculations
+	- gvars: library for configuration loading
+	- cvd: light weight computer vision library
+
+They are included as submodules (referencing not the current upstream version
+but the one that PTAM is compatible with). Their source tree is in
+'ThirdParty/Src' and they are configured to be installed into
+'ThirdParty/Build' directory.
+
+Run these commands in each library source directory:
+	./xcs-configure.sh
+	make install
+
+In this order (it's important): TooN, gvars, libcvd.
+
+PTAM itself is built with cmake.
+
