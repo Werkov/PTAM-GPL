@@ -133,7 +133,7 @@ void HomographyInit::RefineHomographyWithInliers()
       Vector<2> v2Second_real = mvHomographyInliers[i].v2CamPlaneSecond;
       Vector<2> v2Error = mvHomographyInliers[i].m2PixelProjectionJac * (v2Second_real - v2Second);
       
-      vdErrorSquared.push_back(v2Error* v2Error);
+      vdErrorSquared.push_back((double)(v2Error* v2Error));
       vvErrors.push_back(v2Error);
       
       Matrix<2,9> m29Jacobian;

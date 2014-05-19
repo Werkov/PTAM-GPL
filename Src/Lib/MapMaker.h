@@ -44,7 +44,9 @@ public:
   // Make a map from scratch. Called by the tracker.
   bool InitFromStereo(KeyFrame &kFirst, KeyFrame &kSecond, 
 		      std::vector<std::pair<CVD::ImageRef, CVD::ImageRef> > &vMatches,
-		      SE3<> &se3CameraPos);
+		      SE3<> &se3CameraPos,
+			  SE3<> KFZeroDesiredCamFromWorld,
+			  SE3<> KFOneDesiredCamFromWorld);
 
   bool InitFromStereo_OLD(KeyFrame &kFirst, KeyFrame &kSecond,  // EXPERIMENTAL HACK
 		      std::vector<std::pair<CVD::ImageRef, CVD::ImageRef> > &vMatches,
@@ -58,6 +60,13 @@ public:
   bool NeedNewKeyFrame(KeyFrame &kCurrent);            // Is it a good camera pose to add another KeyFrame?
   bool IsDistanceToNearestKeyFrameExcessive(KeyFrame &kCurrent);  // Is the camera far away from the nearest KeyFrame (i.e. maybe lost?)
   
+  double initialScaleFactor;
+  double currentScaleFactor;	// set exgternally for metric scale.
+  double minKFWiggleDist;
+  double minKFDist;
+  double lastMetricDist;
+  double lastWiggleDist;
+
 protected:
   
   Map &mMap;               // The map

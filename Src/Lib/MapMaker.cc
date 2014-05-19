@@ -22,6 +22,8 @@
 #include <windows.h>
 #endif
 
+#include "settingsCustom.h"
+
 using namespace CVD;
 using namespace std;
 using namespace GVars3;
@@ -196,7 +198,9 @@ Vector<3> MapMaker::ReprojectPoint(SE3<> se3AfromB, const Vector<2> &v2A, const 
 bool MapMaker::InitFromStereo(KeyFrame &kF,
 			      KeyFrame &kS,
 			      vector<pair<ImageRef, ImageRef> > &vTrailMatches,
-			      SE3<> &se3TrackerPose)
+			      SE3<> &se3TrackerPose,
+				  SE3<> KFZeroDesiredCamFromWorld,
+				  SE3<> KFOneDesiredCamFromWorld)
 {
   mdWiggleScale = *mgvdWiggleScale; // Cache this for the new map.
 
@@ -224,15 +228,29 @@ bool MapMaker::InitFromStereo(KeyFrame &kF,
     }
   
   // Check that the initialiser estimated a non-zero baseline
-  double dTransMagn = sqrt(se3.get_translation() * se3.get_translation());
+  double dTransMagn = sqrt((double)(se3.get_translation() * se3.get_translation()));
+  double dTransIMUMagn = sqrt((double)((KFZeroDesiredCamFromWorld.get_translation() - KFOneDesiredCamFromWorld.get_translation())*
+	  (KFZeroDesiredCamFromWorld.get_translation() - KFOneDesiredCamFromWorld.get_translation())));
+
   if(dTransMagn == 0)
     {
       cout << "  Estimated zero baseline from stereo pair, try again." << endl;
       return false;
     }
+
+  if(dTransIMUMagn < 0.05)
+    {
+      cout << "  IMU Baseline smaller than 5cm, try again: " << dTransIMUMagn << endl;
+      //return false;
+      dTransIMUMagn = 0.1;
+    }
+
+  //se3.get_translation() *= dTransIMUMagn/dTransMagn;
+
+  // ORIGINAL:
   // change the scale of the map so the second camera is wiggleScale away from the first
   se3.get_translation() *= mdWiggleScale/dTransMagn;
-
+  initialScaleFactor = dTransIMUMagn / mdWiggleScale;
   
   KeyFrame *pkFirst = new KeyFrame();
   KeyFrame *pkSecond = new KeyFrame();
@@ -328,19 +346,55 @@ bool MapMaker::InitFromStereo(KeyFrame &kF,
   mbBundleConverged_Full = false;
   mbBundleConverged_Recent = false;
   
+  time_t started = clock();
   while(!mbBundleConverged_Full)
     {
       BundleAdjustAll();
-      if(mbResetRequested)
-	return false;
+      if(mbResetRequested || ((double)(clock() - started))/(double)CLOCKS_PER_SEC > 1.500)
+	  {
+			printf("ABORT mapmaking, took more than 1.5s (deadlock?)\n");
+			return false;
+	  }
     }
   
+  
   // Rotate and translate the map so the dominant plane is at z=0:
-  ApplyGlobalTransformationToMap(CalcPlaneAligner());
+  printf("PTAM Init: re-scaleing map with %f\n",0.1/pkFirst->dSceneDepthMean);
+  ApplyGlobalScaleToMap(1/pkFirst->dSceneDepthMean);
+  initialScaleFactor *= pkFirst->dSceneDepthMean;
+  ApplyGlobalTransformationToMap(KFZeroDesiredCamFromWorld.inverse());
+  
   mMap.bGood = true;
   se3TrackerPose = pkSecond->se3CfromW;
+
   
   cout << "  MapMaker: made initial map with " << mMap.vpPoints.size() << " points." << endl;
+
+  TooN::Vector<3> ptamTrans = mMap.vpKeyFrames[1]->se3CfromW.get_translation() - mMap.vpKeyFrames[0]->se3CfromW.get_translation();
+  TooN::Vector<3> imuTrans = KFOneDesiredCamFromWorld.get_translation() - KFZeroDesiredCamFromWorld.get_translation();
+
+
+  printf("resulting PTAM Translation: (%.4f, %.4f, %.4f), IMU translation: (%.4f, %.4f, %.4f)",
+	  ptamTrans[0],
+	  ptamTrans[1],
+	  ptamTrans[2],
+	  imuTrans[0],
+	  imuTrans[1],
+	  imuTrans[2]);
+  
+	ptamTrans = ptamTrans / sqrt((double)(ptamTrans*ptamTrans));
+	imuTrans = imuTrans / sqrt((double)(imuTrans*imuTrans));
+	double angle = 180*acos((double)(ptamTrans * imuTrans))/3.1415;
+
+	
+	if(angle > 6000)
+	{
+		printf("\nAngle between estimated Translation is too large (%.1f): try again!\n",angle);
+		return false;
+	}
+	else
+		printf(", angle: %.1f\n",angle);
+
   return true; 
 }
 
@@ -363,8 +417,8 @@ void MapMaker::ThinCandidates(KeyFrame &k, int nLevel)
       irBusyLevelPos.push_back(ir_rounded(it->second.v2RootPos / LevelScale(nLevel)));
     }
   
-  // Only keep those candidates further than 10 pixels away from busy positions.
-  unsigned int nMinMagSquared = 10*10;
+  // Only keep those candidates further than 5 pixels away from busy positions.
+  unsigned int nMinMagSquared = 5*5;
   for(unsigned int i=0; i<vCSrc.size(); i++)
     {
       ImageRef irC = vCSrc[i].irLevelPos;
@@ -405,7 +459,7 @@ void MapMaker::ApplyGlobalTransformationToMap(SE3<> se3NewFromOld)
   for(unsigned int i=0; i<mMap.vpKeyFrames.size(); i++)
     mMap.vpKeyFrames[i]->se3CfromW = mMap.vpKeyFrames[i]->se3CfromW * se3NewFromOld.inverse();
   
-  SO3<> so3Rot = se3NewFromOld.get_rotation();
+  //SO3<> so3Rot = se3NewFromOld.get_rotation();
   for(unsigned int i=0; i<mMap.vpPoints.size(); i++)
     {
       mMap.vpPoints[i]->v3WorldPos = 
@@ -418,7 +472,9 @@ void MapMaker::ApplyGlobalTransformationToMap(SE3<> se3NewFromOld)
 void MapMaker::ApplyGlobalScaleToMap(double dScale)
 {
   for(unsigned int i=0; i<mMap.vpKeyFrames.size(); i++)
+  {
     mMap.vpKeyFrames[i]->se3CfromW.get_translation() *= dScale;
+  }
   
   for(unsigned int i=0; i<mMap.vpPoints.size(); i++)
     {
@@ -427,6 +483,11 @@ void MapMaker::ApplyGlobalScaleToMap(double dScale)
       (*mMap.vpPoints[i]).v3PixelDown_W *= dScale;
       (*mMap.vpPoints[i]).RefreshPixelVectors();
     }
+
+  for(unsigned int i=0; i<mMap.vpKeyFrames.size(); i++)
+  {
+	RefreshSceneDepth(mMap.vpKeyFrames[i]);
+  }
 }
 
 // The tracker entry point for adding a new keyframe;
@@ -506,8 +567,8 @@ bool MapMaker::AddPointEpipolar(KeyFrame &kSrc,
   // to increase reliability
   double dMean = kSrc.dSceneDepthMean;
   double dSigma = kSrc.dSceneDepthSigma;
-  double dStartDepth = max(mdWiggleScale, dMean - dSigma);
-  double dEndDepth = min(40 * mdWiggleScale, dMean + dSigma);
+  double dStartDepth = max(mdWiggleScale*0.75, dMean - dSigma * 1.5);
+  double dEndDepth = min(40 * mdWiggleScale * 1.5, dMean + dSigma * 1.5);
   
   Vector<3> v3CamCenter_TC = kTarget.se3CfromW * kSrc.se3CfromW.inverse().get_translation(); // The camera end
   Vector<3> v3RayStart_TC = v3CamCenter_TC + dStartDepth * v3LineDirn_TC;                               // the far-away end
@@ -636,7 +697,7 @@ double MapMaker::KeyFrameLinearDist(KeyFrame &k1, KeyFrame &k2)
   Vector<3> v3KF1_CamPos = k1.se3CfromW.inverse().get_translation();
   Vector<3> v3KF2_CamPos = k2.se3CfromW.inverse().get_translation();
   Vector<3> v3Diff = v3KF2_CamPos - v3KF1_CamPos;
-  double dDist = sqrt(v3Diff * v3Diff);
+  double dDist = sqrt((double)(v3Diff * v3Diff));
   return dDist;
 }
 
@@ -689,10 +750,14 @@ double MapMaker::DistToNearestKeyFrame(KeyFrame &kCurrent)
 bool MapMaker::NeedNewKeyFrame(KeyFrame &kCurrent)
 {
   KeyFrame *pClosest = ClosestKeyFrame(kCurrent);
-  double dDist = KeyFrameLinearDist(kCurrent, *pClosest);
-  dDist *= (1.0 / kCurrent.dSceneDepthMean);
-  
-  if(dDist > GV2.GetDouble("MapMaker.MaxKFDistWiggleMult",1.0,SILENT) * mdWiggleScaleDepthNormalized)
+  double dDist = KeyFrameLinearDist(kCurrent, *pClosest);	// distance in PTAMS system.
+  lastMetricDist = dDist * currentScaleFactor;
+  lastWiggleDist = dDist / kCurrent.dSceneDepthMean;
+
+  //cout << "PTAM metDist: " << lastMetricDist << " (min. " << minKFDist << ") wiggleDist: " << lastWiggleDist << " (min. " << minKFWiggleDist << ")"<<endl;
+
+
+  if(lastWiggleDist > minKFWiggleDist || lastMetricDist > minKFDist)
     return true;
   return false;
 }
@@ -1074,7 +1139,7 @@ SE3<> MapMaker::CalcPlaneAligner()
 	  double dDistSq = v3Diff * v3Diff;
 	  if(dDistSq == 0.0)
 	    continue;
-	  double dNormDist = fabs(v3Diff * v3Normal);
+	  double dNormDist = fabs((double)(v3Diff * v3Normal));
 	  
 	  if(dNormDist > 0.05)
 	    dNormDist = 0.05;
@@ -1096,7 +1161,7 @@ SE3<> MapMaker::CalcPlaneAligner()
       double dDistSq = v3Diff * v3Diff;
       if(dDistSq == 0.0)
 	continue;
-      double dNormDist = fabs(v3Diff * v3BestNormal);
+      double dNormDist = fabs((double)(v3Diff * v3BestNormal));
       if(dNormDist < 0.05)
 	vv3Inliers.push_back(mMap.vpPoints[i]->v3WorldPos);
     }

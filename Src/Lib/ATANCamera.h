@@ -65,7 +65,7 @@ class CalibImage;
 
 class ATANCamera {
  public:
-  ATANCamera(std::string sName);
+  ATANCamera(TooN::Vector<5> params);
 
   // Image size get/set: updates the internal projection params to that target image size.
   void SetImageSize(Vector<2> v2ImageSize);

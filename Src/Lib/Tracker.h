@@ -46,12 +46,29 @@ public:
   
   // TrackFrame is the main working part of the tracker: call this every frame.
   void TrackFrame(CVD::Image<CVD::byte> &imFrame, bool bDraw); 
+  void TakeKF(bool force);
+  void tryToRecover();
 
   inline SE3<> GetCurrentPose() { return mse3CamFromWorld;}
   
   // Gets messages to be printed on-screen for the user.
   std::string GetMessageForUser();
   
+  inline void pressSpacebar() {mbUserPressedSpacebar = true;}
+  inline void resetMap() {Reset();}
+  int numPointsFound;
+  int numPointsAttempted;
+  enum {I_FIRST, I_SECOND, I_FAILED ,T_GOOD, T_DODGY, T_LOST, T_RECOVERED_GOOD, T_RECOVERED_DODGY, NOT_TRACKING, INITIALIZING, T_TOOK_KF} lastStepResult;
+
+  // kf takking parameters (settable via ros dyn. reconfigure)
+  double minKFTimeDist;
+
+
+  // the value of this at I_FIRST will be approx. the first keyframe's position.
+  // the value of this at I_SECOND will be approx. the second keyframe's position (or at least the translation will be scaled respectively).
+  inline void setPredictedCamFromW(SE3<>& camFromW) {predictedCFromW = camFromW;}
+  inline void setLastFrameLost(bool lost, bool useGuessForRecovery = false) {lastFrameLost = lost; useGuess = useGuessForRecovery;};
+
 protected:
   KeyFrame mCurrentKF;            // The current working frame as a keyframe struct
   
@@ -76,7 +93,8 @@ protected:
   std::list<Trail> mlTrails;      // Used by trail tracking
   KeyFrame mFirstKF;              // First of the stereo pair
   KeyFrame mPreviousFrameKF;      // Used by trail tracking to check married matches
-  
+  SE3<> KFZeroDesiredCamFromWorld;	      // ADDED: this is the pose, KFZero is supposed to have, after stereo-init.
+
   // Methods for tracking the map once it has been made:
   void TrackMap();                // Called by TrackFrame if there is a map.
   void AssessTrackingQuality();   // Heuristics to choose between good, poor, bad.
@@ -100,17 +118,23 @@ protected:
   // Interface with map maker:
   int mnFrame;                    // Frames processed since last reset
   int mnLastKeyFrameDropped;      // Counter of last keyframe inserted.
+  clock_t mnLastKeyFrameDroppedClock;
   void AddNewKeyFrame();          // Gives the current frame to the mapmaker to use as a keyframe
-  
+  SE3<> predictedCFromW;		  // gets filled externally, and is used by various init stages.
+
+
+
   // Tracking quality control:
   int manMeasAttempted[LEVELS];
   int manMeasFound[LEVELS];
   enum {BAD, DODGY, GOOD} mTrackingQuality;
   int mnLostFrames;
-  
+
   // Relocalisation functions:
   bool AttemptRecovery();         // Called by TrackFrame if tracking is lost.
   bool mbJustRecoveredSoUseCoarse;// Always use coarse tracking after recovery!
+  bool lastFrameLost;
+  bool useGuess;
 
   // Frame-to-frame motion init:
   SmallBlurryImage *mpSBILastFrame;

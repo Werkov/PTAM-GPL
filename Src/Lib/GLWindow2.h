@@ -10,14 +10,14 @@
 
 #include <cvd/glwindow.h>
 #include <TooN/TooN.h>
+#include "MouseKeyHandler.h"
 
 class GLWindowMenu;
-
 
 class GLWindow2 : public CVD::GLWindow, public CVD::GLWindow::EventHandler
 {
 public:
-  GLWindow2(CVD::ImageRef irSize, std::string sTitle);
+  GLWindow2(CVD::ImageRef irSize, std::string sTitle, MouseKeyHandler* handler = 0);
   
   // The preferred event handler..
   void HandlePendingEvents();
@@ -48,6 +48,8 @@ protected:
   // User interface menus:
   std::vector<GLWindowMenu*> mvpGLWindowMenus;
 
+  MouseKeyHandler* myHandler;
+
   CVD::ImageRef mirVideoSize;   // The size of the source video material.
   
 
@@ -61,8 +63,6 @@ protected:
   // Storage for map viewer updates:
   TooN::Vector<6> mvMCPoseUpdate;
   TooN::Vector<6> mvLeftPoseUpdate;
-  
-
 };
 
 

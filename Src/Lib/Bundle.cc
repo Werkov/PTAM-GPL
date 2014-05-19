@@ -14,6 +14,8 @@ using namespace std;
 inline bool isnan(double d) {return !(d==d);}
 #endif
 
+#include "settingsCustom.h"
+
 #define cout if(*mgvnBundleCout) cout
 
 // Some inlines which replace standard matrix multiplications 
@@ -37,9 +39,9 @@ Bundle::Bundle(const ATANCamera &TCam)
 {
   mnCamsToUpdate = 0;
   mnStartRow = 0;
-  GV3::Register(mgvnMaxIterations, "Bundle.MaxIterations", 20,  SILENT);
-  GV3::Register(mgvdUpdateConvergenceLimit, "Bundle.UpdateSquaredConvergenceLimit", 1e-06, SILENT);
-  GV3::Register(mgvnBundleCout, "Bundle.Cout", 0, SILENT);
+  GV3::Register(mgvnMaxIterations, "Bundle.MaxIterations", BUNDLE_MAX_ITERATIONS,  SILENT);
+  GV3::Register(mgvdUpdateConvergenceLimit, "Bundle.UpdateSquaredConvergenceLimit", BUNDLE_UPDATE_SQUARED_CONV_LIMIT, SILENT);
+  GV3::Register(mgvnBundleCout, "Bundle.Cout", BUNDLE_COUT, SILENT);
 };
 
 // Add a camera to the system, return value is the bundle adjuster's ID for the camera
@@ -129,7 +131,7 @@ int Bundle::Compute(bool *pbAbortSignal)
   mnAccepted = 0;
   
   // What MEstimator are we using today?
-  static gvar3<string> gvsMEstimator("BundleMEstimator", "Tukey", SILENT);
+  static gvar3<string> gvsMEstimator("BundleMEstimator", BUNDLE_M_ESTIMATOR, SILENT);
   
   while(!mbConverged  && !mbHitMaxIterations && !*pbAbortSignal)
     {
@@ -200,11 +202,13 @@ bool Bundle::Do_LM_Step(bool *pbAbortSignal)
   // Projected all points and got vector of errors; find the median, 
   // And work out robust estimate of sigma, then scale this for the tukey
   // estimator
+  // BUG? 
+  if(vdErrorSquared.size() < 1) return false;
   mdSigmaSquared = MEstimator::FindSigmaSquared(vdErrorSquared);
 
   // Initially the median error might be very small - set a minimum
   // value so that good measurements don't get erased!
-  static gvar3<double> gvdMinSigma("Bundle.MinTukeySigma", 0.4, SILENT);
+  static gvar3<double> gvdMinSigma("Bundle.MinTukeySigma", BUNDLE_MIN_TUKEY_SIGMA, SILENT);
   const double dMinSigmaSquared = *gvdMinSigma * *gvdMinSigma;
   if(mdSigmaSquared < dMinSigmaSquared)
     mdSigmaSquared = dMinSigmaSquared;
