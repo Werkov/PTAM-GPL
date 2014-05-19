@@ -36,9 +36,9 @@ Compilation and dependencies with cmake
 ---------------------------------------
 
 Dependencies are:
-	- TooN (header only): library for numerical calculations
-	- gvars: library for configuration loading
-	- cvd: light weight computer vision library
+- TooN (header only): library for numerical calculations
+- gvars: library for configuration loading
+- cvd: light weight computer vision library
 
 They are included as submodules (referencing not the current upstream version
 but the one that PTAM is compatible with). Their source tree is in
@@ -46,6 +46,7 @@ but the one that PTAM is compatible with). Their source tree is in
 'ThirdParty/Build' directory.
 
 Run these commands in each library source directory:
+
 	./xcs-configure.sh
 	make install
 
