@@ -22,6 +22,7 @@ class VideoSource
 {
  public:
   VideoSource();
+  ~VideoSource();
   void GetAndFillFrameBWandRGB(CVD::Image<CVD::byte> &imBW, CVD::Image<CVD::Rgb<CVD::byte> > &imRGB);
   CVD::ImageRef Size();
   

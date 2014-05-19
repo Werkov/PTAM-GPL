@@ -10,11 +10,21 @@ using namespace GVars3;
 
 ATANCamera::ATANCamera(TooN::Vector<5> params)
 {
-  // The camera name is used to find the camera's parameters in a GVar.
+  // Fixed camera name 'Camera' params are given directly.
   msName = "Camera";
   //mgvvCameraParams = params;
   GV2.Register(mgvvCameraParams, "Camera.Parameters",params,HIDDEN | SILENT);
-  //GV2.Register(mgvvCameraParams, sName+".Parameters", mvDefaultParams, HIDDEN | FATAL_IF_NOT_DEFINED);
+  mvImageSize[0] = 640.0;
+  mvImageSize[1] = 480.0;
+  RefreshParams();
+}
+
+ATANCamera::ATANCamera(const std::string &sName)
+{
+  // The camera name is used to find the camera's parameters in a GVar.
+  msName = sName;
+  //mgvvCameraParams = params;
+  GV2.Register(mgvvCameraParams, sName+".Parameters", mvDefaultParams, HIDDEN | FATAL_IF_NOT_DEFINED);
   mvImageSize[0] = 640.0;
   mvImageSize[1] = 480.0;
   RefreshParams();
