@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
 project(ptam)
 
-set(CVD_ROOT ../ThirdParty/Build/libcvd)
 set(TooN_ROOT ../ThirdParty/Build/TooN)
+set(CVD_ROOT ../ThirdParty/Build/libcvd)
 set(gvars_ROOT ../ThirdParty/Build/gvars)
 
 # Linux video source
@@ -29,3 +29,15 @@ include_directories(Lib)
 add_subdirectory(Calib)
 add_subdirectory(Demo)
 add_subdirectory(Lib)
+
+#
+# Install 
+#
+install(DIRECTORY ${TooN_ROOT}/include DESTINATION .)
+
+install(DIRECTORY ${CVD_ROOT}/include DESTINATION .)
+install(DIRECTORY ${CVD_ROOT}/lib DESTINATION .)
+
+install(DIRECTORY ${gvars_ROOT}/include DESTINATION .)
+install(DIRECTORY ${gvars_ROOT}/lib DESTINATION .)
+
