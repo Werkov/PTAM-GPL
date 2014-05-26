@@ -4,9 +4,13 @@ project(${PROJECT_NAME})
 file(GLOB SOURCES *.cc)
 file(GLOB HEADERS *.h)
 
-add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
+add_library(${PROJECT_NAME} STATIC ${SOURCES} ${HEADERS})
 target_link_libraries(${PROJECT_NAME} ${CVD_LIBRARIES} ${gvars_LIBRARIES} ${TooN_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} ${gst_LIBRARIES})
+
+if(UNIX)
+    add_definitions("-fPIC")
+endif(UNIX)
 
 #
 # Install 
