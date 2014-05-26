@@ -32,7 +32,7 @@ include_directories(${TooN_INCLUDES};${CVD_INCLUDES};${gvars_INCLUDES})
 
 find_library(CVD_LIBRARIES cvd PATHS ${CVD_ROOT}/lib)
 find_library(gvars_LIBRARIES GVars3 PATHS ${gvars_ROOT}/lib)
-find_library(TooN_LIBRARIES lapack)
+find_library(TooN_LIBRARIES lapack NAMES lapack_win64_MT)
 
 
 
