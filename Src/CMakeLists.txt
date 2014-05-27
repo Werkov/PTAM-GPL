@@ -26,7 +26,7 @@ else()
 endif(USE_GSTREAMER)
 
 
-set(CMAKE_LINKER_FLAGS "-Wl,--no-undefined") # show unresolved symbols during link time
+set(CMAKE_STATIC_LINKER_FLAGS "-Wl,--no-undefined") # show unresolved symbols during link time
 
 include_directories(${TooN_INCLUDES};${CVD_INCLUDES};${gvars_INCLUDES})
 
