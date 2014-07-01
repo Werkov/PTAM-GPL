@@ -66,7 +66,7 @@ public:
 
   // the value of this at I_FIRST will be approx. the first keyframe's position.
   // the value of this at I_SECOND will be approx. the second keyframe's position (or at least the translation will be scaled respectively).
-  inline void setPredictedCamFromW(SE3<>& camFromW) {predictedCFromW = camFromW;}
+  inline void setPredictedCamFromW(const SE3<>& camFromW) {predictedCFromW = camFromW;}
   inline void setLastFrameLost(bool lost, bool useGuessForRecovery = false) {lastFrameLost = lost; useGuess = useGuessForRecovery;};
 
 protected:
