@@ -347,12 +347,13 @@ bool MapMaker::InitFromStereo(KeyFrame &kF,
   mbBundleConverged_Recent = false;
   
   time_t started = clock();
+  const double timeLimit = 0.5; // seconds
   while(!mbBundleConverged_Full)
     {
       BundleAdjustAll();
-      if(mbResetRequested || ((double)(clock() - started))/(double)CLOCKS_PER_SEC > 1.500)
+      if(mbResetRequested || ((double)(clock() - started))/(double)CLOCKS_PER_SEC > timeLimit)
 	  {
-			printf("ABORT mapmaking, took more than 1.5s (deadlock?)\n");
+			printf("ABORT mapmaking, took more than %.2f s (deadlock?)\n", timeLimit);
 			return false;
 	  }
     }
@@ -384,16 +385,17 @@ bool MapMaker::InitFromStereo(KeyFrame &kF,
   
 	ptamTrans = ptamTrans / sqrt((double)(ptamTrans*ptamTrans));
 	imuTrans = imuTrans / sqrt((double)(imuTrans*imuTrans));
-	double angle = 180*acos((double)(ptamTrans * imuTrans))/3.1415;
+	double angle = abs(acos((double)(ptamTrans * imuTrans)));
 
-	
-	if(angle > 6000)
+	const double angleLimit = M_PI/5;
+	if(angle > angleLimit) // 30°
 	{
-		printf("\nAngle between estimated Translation is too large (%.1f): try again!\n",angle);
+		printf("\nAngle between estimated Translation is too large (%.2f > %.2f): try again!\n", angle, angleLimit);
 		return false;
 	}
-	else
+	else {
 		printf(", angle: %.1f\n",angle);
+        }
 
   return true; 
 }
