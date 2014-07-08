@@ -4,16 +4,23 @@
 #include <cvd/vector_image_ref.h>
 #include <iostream>
 #include <gvars3/instances.h>
+#include <cassert>
 using namespace std;
 using namespace CVD;
 using namespace GVars3;
 
-ATANCamera::ATANCamera(TooN::Vector<5> params)
+ATANCamera::ATANCamera(const CameraParameters& params)
 {
-  // Fixed camera name 'Camera' params are given directly.
+  // Convert std::vector to TooN::Vector<5>
+  assert(params.size() == 5);
+  TooN::Vector<5> toonParams;
+  for(CameraParameters::const_iterator it = params.begin(); it != params.end(); ++it) {
+      toonParams[it - params.begin()] = *it;
+  }
+
+  // "Dummy" camery name 'Camera' (params are given directly, not from config).
   msName = "Camera";
-  //mgvvCameraParams = params;
-  GV2.Register(mgvvCameraParams, "Camera.Parameters",params,HIDDEN | SILENT);
+  GV2.Register(mgvvCameraParams, "Camera.Parameters",toonParams,HIDDEN | SILENT);
   mvImageSize[0] = 640.0;
   mvImageSize[1] = 480.0;
   RefreshParams();

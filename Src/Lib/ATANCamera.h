@@ -46,6 +46,7 @@
 
 #include <TooN/TooN.h>
 #include <cmath>
+#include <vector>
 using namespace TooN;
 #include <cvd/vector_image_ref.h>
 #include <gvars3/gvars3.h>
@@ -65,9 +66,11 @@ class CalibImage;
 
 class ATANCamera {
  public:
+  typedef std::vector<double> CameraParameters;
+  
   ATANCamera(const std::string &sName);
   
-  ATANCamera(TooN::Vector<5> params);
+  ATANCamera(const CameraParameters& params);
 
   // Image size get/set: updates the internal projection params to that target image size.
   void SetImageSize(Vector<2> v2ImageSize);
