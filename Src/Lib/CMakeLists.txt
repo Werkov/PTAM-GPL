@@ -9,6 +9,7 @@ target_link_libraries(${PROJECT_NAME} ${TooN_LIBRARIES} ${CVD_LIBRARIES} ${gvars
 target_link_libraries(${PROJECT_NAME} ${gst_LIBRARIES})
 
 if(UNIX)
+    target_link_libraries(${PROJECT_NAME} GL)
     add_definitions("-fPIC")
 endif(UNIX)
 

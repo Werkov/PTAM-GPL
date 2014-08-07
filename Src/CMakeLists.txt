@@ -26,7 +26,7 @@ else()
 endif(USE_GSTREAMER)
 
 
-set(CMAKE_STATIC_LINKER_FLAGS "-Wl,--no-undefined") # show unresolved symbols during link time
+set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--no-undefined") # show unresolved symbols during link time
 
 include_directories(${TooN_INCLUDES};${CVD_INCLUDES};${gvars_INCLUDES})
 
@@ -38,8 +38,10 @@ find_library(TooN_LIBRARIES lapack NAMES lapack_win64_MT)
 
 include_directories(Lib)
 
-add_subdirectory(Calib)
-add_subdirectory(Demo)
+if(UNIX)
+    add_subdirectory(Calib)
+    add_subdirectory(Demo)
+endif()
 add_subdirectory(Lib)
 
 #
