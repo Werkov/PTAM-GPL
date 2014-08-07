@@ -54,3 +54,10 @@ In this order (it's important): TooN, gvars, libcvd.
 
 PTAM itself is built with cmake.
 
+Building Debian packages
+------------------------
+Update submodules to obtain complete sources.
+Then run 'build-package.sh' in the root directory.
+Source and binary packages for Debian will be created.
+(The compilation instructions above are implemented in debial/rules file.)
+
