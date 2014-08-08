@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(ptam)
 
-set(THIRD_PARTY ../ThirdParty)
+set(THIRD_PARTY ${CMAKE_CURRENT_SOURCE_DIR}/../ThirdParty)
 
 set(TooN_ROOT ${THIRD_PARTY}/Build/TooN)
 set(TooN_INCLUDES ${THIRD_PARTY}/Src)
@@ -30,10 +30,7 @@ set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--no-undefined") # show unresolved symbols du
 
 include_directories(${TooN_INCLUDES};${CVD_INCLUDES};${gvars_INCLUDES})
 
-find_library(CVD_LIBRARIES cvd PATHS ${CVD_ROOT}/lib)
-find_library(gvars_LIBRARIES GVars3 PATHS ${gvars_ROOT}/lib)
 find_library(TooN_LIBRARIES lapack NAMES lapack_win64_MT)
-
 
 
 include_directories(Lib)
