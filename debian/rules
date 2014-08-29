@@ -12,7 +12,7 @@ THIRDPARTY_BUILD=$(MK_DIR)/../ThirdParty/Build
 SRC_DIR=$(MK_DIR)/../Src
 BUILD_DIR=$(MK_DIR)/../Build
 PKG_ROOT=$(MK_DIR)/../$(PKG_NAME)_$(DEB_BUILD_ARCH)
-INSTALL_DIR=$(PKG_ROOT)/opt/xcs-ptam
+INSTALL_DIR=$(PKG_ROOT)/opt/xcs/xcs-ptam
 RELATIVIZE=$(MK_DIR)/relativize-symlinks.sh
 
 build: build-arch build-indep

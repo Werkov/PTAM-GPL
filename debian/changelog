@@ -1,5 +1,6 @@
-xcs-ptam (0.2) unstable; urgency=low
+xcs-ptam (1.0~tum1) unstable; urgency=low
 
-  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+  * Based on GPL PTAM version 1.0, with pathes by Jakob Engel and minor
+    patches for XCS.
 
  -- Michal Koutný <xm.koutny@gmail.com>  Thu, 07 Aug 2014 11:18:57 +0200

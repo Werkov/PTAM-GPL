@@ -1,4 +1,4 @@
 #!/bin/bash
 
-dpkg-buildpackage -uc -uc -i.git
+dpkg-buildpackage -uc -us -I.git
 
