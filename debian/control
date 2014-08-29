@@ -1,16 +1,19 @@
 Source: xcs-ptam
 Priority: optional
 Maintainer: Michal Koutný <xm.koutny@gmail.com>
-Build-Depends: debhelper (>= 8.0.0)
+Build-Depends: debhelper (>= 8.0.0), cmake
 Standards-Version: 3.9.4
-Section: libs
 Homepage: http://drones.ms.mff.cuni.cz/xcs
 #Vcs-Git: git://git.debian.org/collab-maint/ptam.git
 #Vcs-Browser: http://git.debian.org/?p=collab-maint/ptam.git;a=summary
 
-Package: xcs-ptam-dev
-Section: libdevel
+Package: libxcs-ptam
 Architecture: any
-Description: Parallel tracking and mapping support library.
+Description: PTAM library for XCS.
  With custom TooN, GVars and CVD libraries.
+
+Package: libxcs-ptam-dev
+Depends: libxcs-ptam
+Architecture: any
+Description: Development files for PTAM library of XCS.
 
