@@ -65,7 +65,7 @@ prepare_cvd: prepare_gvars prepare_toon
 	touch $@
 
 clean: clean-libxcs-ptam clean-libxcs-ptam-dev 
-	rm -f build-arch binary-arch prepare_toon prepare_gvars prepare_cvd
+	rm -f build-arch binary-arch prepare_toon prepare_gvars prepare_cvd prepare_binary
 	rm -rf $(THIRDPARTY_BUILD)
 	rm -rf $(BUILD_DIR)
 
