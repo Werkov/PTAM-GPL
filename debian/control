@@ -1,4 +1,5 @@
 Source: xcs-ptam
+Section: unknown
 Priority: optional
 Maintainer: Michal Koutný <xm.koutny@gmail.com>
 Build-Depends: debhelper (>= 8.0.0), cmake
