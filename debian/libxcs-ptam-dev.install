@@ -1,3 +1,3 @@
-lib/*.a opt/xcs/ptam-xcs/lib
-include/* opt/xcs/ptam-xcs/include
-share/* opt/xcs/ptam-xcs/share
+lib/*.a opt/xcs/xcs-ptam/lib
+include/* opt/xcs/xcs-ptam/include
+share/* opt/xcs/xcs-ptam/share

@@ -1,3 +1,9 @@
+xcs-ptam (1.0~tum2) unstable; urgency=low
+
+  * Fixed path.
+
+ -- Michal Koutný <xm.koutny@gmail.com>  Thu, 30 Aug 2014 03:18:57 +0200
+
 xcs-ptam (1.0~tum1) unstable; urgency=low
 
   * Based on GPL PTAM version 1.0, with pathes by Jakob Engel and minor
