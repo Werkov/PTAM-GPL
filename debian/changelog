@@ -1,3 +1,9 @@
+xcs-ptam (1.0~tum3) unstable; urgency=low
+
+  * Added dependency.
+
+ -- Michal Koutný <xm.koutny@gmail.com>  Thu, 30 Aug 2014 03:18:57 +0200
+
 xcs-ptam (1.0~tum2) unstable; urgency=low
 
   * Fixed path.

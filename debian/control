@@ -9,6 +9,7 @@ Homepage: http://drones.ms.mff.cuni.cz/xcs
 #Vcs-Browser: http://git.debian.org/?p=collab-maint/ptam.git;a=summary
 
 Package: libxcs-ptam
+Depends: libdc1394-22
 Architecture: any
 Description: PTAM library for XCS.
  With custom TooN, GVars and CVD libraries.
