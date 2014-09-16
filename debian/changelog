@@ -1,3 +1,9 @@
+xcs-ptam (1.0~tum4) unstable; urgency=low
+
+  * Updated Build-depends.
+
+ -- Michal Koutný <xm.koutny@gmail.com>  Thu, 30 Aug 2014 03:18:57 +0200
+
 xcs-ptam (1.0~tum3) unstable; urgency=low
 
   * Added dependency.

@@ -2,7 +2,31 @@ Source: xcs-ptam
 Section: unknown
 Priority: optional
 Maintainer: Michal Koutný <xm.koutny@gmail.com>
-Build-Depends: debhelper (>= 8.0.0), cmake
+Build-Depends: cmake,
+  cmake-data,
+  debhelper (>= 8.0.0),
+  fakeroot,
+  gawk,
+  libatlas3-base,
+  libc6,
+  libdc1394-22-dev,
+  libegl1-mesa,
+  libfile-fcntllock-perl,
+  libgl1-mesa-glx,
+  libglu1-mesa-dev,
+  libjpeg-turbo8-dev,
+  liblapack3,
+  liblapack-dev,
+  liblocale-gettext-perl,
+  libpng12-0,
+  libpng12-dev,
+  libtiff5-dev,
+  locales,
+  mesa-common-dev,
+  mime-support,
+  perl-modules,
+  x11proto-core-dev,
+  xutils-dev
 Standards-Version: 3.9.4
 Homepage: http://drones.ms.mff.cuni.cz/xcs
 #Vcs-Git: git://git.debian.org/collab-maint/ptam.git
